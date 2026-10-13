@@ -1,11 +1,10 @@
 'use server';
-import { cookies } from "next/headers";
 import { Contact } from "../types/contacts-schema";
 import { Params } from "../types/params";
 import { PaginatedResponseServerDto } from "../types/response-server.dto";
+import { getToken } from "../lib/get-token";
 
 export async function getContacts({ page, limit, search, sortBy, sortOrder }: Params):Promise<PaginatedResponseServerDto<Contact>> {
-
   const params = new URLSearchParams({
     page: String(page),
     limit: String(limit),
@@ -15,7 +14,7 @@ export async function getContacts({ page, limit, search, sortBy, sortOrder }: Pa
   })
   const response = await fetch(`${process.env.API_URL}/contacts?${params.toString()}`, {
     headers: {
-      Authorization: `Bearer ${(await cookies()).get('token')?.value}`,
+      Authorization: `Bearer ${await getToken()}`,
     },
   });
 

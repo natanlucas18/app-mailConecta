@@ -1,7 +1,7 @@
 'use server';
-import { cookies } from "next/headers";
 import { Contact, ContactFormType } from "../types/contacts-schema";
 import { ResponseServerDto } from "../types/response-server.dto";
+import { getToken } from "../lib/get-token";
 
 export type UpdateContactPayload = {
   id: string,
@@ -12,7 +12,7 @@ export async function updateContact({id, data}: UpdateContactPayload):Promise<Re
     method: 'PATCH',
     headers: {
         'content-type': 'application/json',
-        Authorization: `Bearer ${(await cookies()).get('token')?.value}`,
+        Authorization: `Bearer ${await getToken()}`,
     },
     body: JSON.stringify(data)
   });

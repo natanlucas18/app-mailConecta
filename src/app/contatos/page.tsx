@@ -10,7 +10,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, SearchIcon } from "lucide-react"
+import { ArrowUpDown, ChevronLeft, ChevronRight, SearchIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -123,7 +123,7 @@ export const columns: ColumnDef<Contact>[] = [
       <span className="text-gray-800 font-medium">Ações</span>
     ),
     cell: ({ row }) => (
-      <ContactActions contact={row.original}/>
+      <ContactActions contact={row.original} />
     )
   },
 ]
@@ -200,9 +200,9 @@ export default function ContactsPage() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -249,46 +249,52 @@ export default function ContactsPage() {
           </Table>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <Select value={String(limit)} onValueChange={handleLimitChange}>
-            <SelectTrigger className="w-20">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {[5, 10, 15, 20].map(v => (
-                  <SelectItem key={v} value={String(v)}>
-                    {v}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+        {(data?.meta?.totalItems ?? 0) > 0 &&
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <Select value={String(limit)} onValueChange={handleLimitChange}>
+              <SelectTrigger className="w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {[5, 10, 15, 20].map(v => (
+                    <SelectItem key={v} value={String(v)}>
+                      {v}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              className="border-purple-200 text-purple-700 hover:bg-purple-50"
-              disabled={page === 1}
-              onClick={() => setPage(p => p - 1)}
-            >
-              Anterior
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                disabled={page <= 1}
+                aria-label="Página anterior"
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span className="hidden md:inline">Anterior</span>
+              </Button>
 
-            <span className="text-gray-700">
-              Página {page} de {data?.meta?.totalPages ?? 1}
-            </span>
+              <span className="text-gray-700">
+                Página {page} de {data?.meta?.totalPages ?? 1}
+              </span>
 
-            <Button
-              variant="outline"
-              className="border-purple-200 text-purple-700 hover:bg-purple-50"
-              disabled={page === data?.meta?.totalPages}
-              onClick={() => setPage(p => p + 1)}
-            >
-              Próxima
-            </Button>
+              <Button
+                variant="outline"
+                className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                disabled={page >= (data?.meta?.totalPages ?? 0)}
+                aria-label="Próxima página"
+                onClick={() => setPage(p => Math.min((data?.meta?.totalPages ?? 0), p + 1))}
+              >
+                <span className="hidden md:inline">Próxima</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        }
       </section>
     </main>
   )

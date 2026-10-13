@@ -3,6 +3,7 @@
 import { signOut, useSession } from "next-auth/react"
 import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PathLinks } from "../types/path-links"
 
 export function NavBar() {
     const { data: session, status } = useSession()
@@ -24,7 +25,10 @@ export function NavBar() {
 
                     <Button
                         variant="ghost"
-                        onClick={() => signOut()}
+                        onClick={() => signOut({
+                            callbackUrl: PathLinks.LOGIN
+                        }
+                        )}
                         className="flex items-center gap-2 h-9 px-4 text-gray-700 hover:text-purple-700"
                     >
                         <LogOut className="w-4 h-4" />
